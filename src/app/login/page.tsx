@@ -31,16 +31,16 @@ export default function LoginPage() {
       const { data } = await api.post<LoginResponse>("/auth/login", credentials);
       return data;
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       setMessage({ text: "Login successful! Redirecting...", type: "success" });
       // Token is stored in httpOnly cookie by backend, no need to store in localStorage
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      // Use window.location for a hard redirect to ensure middleware runs properly
-      setTimeout(() => {
-        const role = data.user.role;
-        window.location.href = dashboardRoutes[role];
-      }, 500);
+      // Wait a bit longer to ensure cookie is set, then do a hard redirect
+      await new Promise(resolve => setTimeout(resolve, 800));
+      const role = data.user.role;
+      console.log("Redirecting to:", dashboardRoutes[role]);
+      window.location.href = dashboardRoutes[role];
     },
     onError: (error: any) => {
       setMessage({

@@ -18,14 +18,11 @@ export async function middleware(req: NextRequest) {
   const protectedPaths = ["/dashboard"]; 
   const isProtected = protectedPaths.some((p) => pathname.startsWith(p)); 
 
-  // Allow access to login and signup pages
-  if (pathname === "/login" || pathname === "/signup") {
-    return NextResponse.next(); 
-  }
-
   if (!isProtected) return NextResponse.next(); 
 
   const token = req.cookies.get("token")?.value; 
+  console.log("Middleware checking path:", pathname, "Token exists:", !!token);
+  
   if (!token) {
     console.log("No token found, redirecting to login");
     return NextResponse.redirect(new URL("/login", req.url)); 
@@ -57,7 +54,8 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next(); 
   } catch (err) {
     console.error("Web middleware JWT error:", err);
-    console.error("Failed to verify token, redirecting to login");
+    console.error("Token value (first 20 chars):", token?.substring(0, 20));
+    console.error("JWT_SECRET exists:", !!process.env.JWT_SECRET);
     const res = NextResponse.redirect(new URL("/login", req.url));
     res.cookies.set("token", "", { expires: new Date(0) });
     return res;
@@ -65,5 +63,5 @@ export async function middleware(req: NextRequest) {
 } 
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/login", "/signup"],
+  matcher: ["/dashboard/:path*"],
 };
