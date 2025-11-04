@@ -20,8 +20,11 @@ export async function middleware(req: NextRequest) {
 
   if (!isProtected) return NextResponse.next(); 
 
-  const token = req.cookies.get("token")?.value; 
-  console.log("Middleware checking path:", pathname, "Token exists:", !!token);
+  const token = req.cookies.get("token")?.value;
+  const allCookies = req.cookies.getAll();
+  console.log("Middleware checking path:", pathname);
+  console.log("All cookies:", allCookies);
+  console.log("Token exists:", !!token);
   
   if (!token) {
     console.log("No token found, redirecting to login");
