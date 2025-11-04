@@ -36,11 +36,11 @@ export default function LoginPage() {
       // Token is stored in httpOnly cookie by backend, no need to store in localStorage
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      // Add a small delay to ensure the message is displayed before redirecting
+      // Use window.location for a hard redirect to ensure middleware runs properly
       setTimeout(() => {
         const role = data.user.role;
-        router.push(dashboardRoutes[role]);
-      }, 1000);
+        window.location.href = dashboardRoutes[role];
+      }, 500);
     },
     onError: (error: any) => {
       setMessage({

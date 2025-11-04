@@ -26,11 +26,13 @@ export async function middleware(req: NextRequest) {
   if (!isProtected) return NextResponse.next(); 
 
   const token = req.cookies.get("token")?.value; 
-  if (!token) { 
+  if (!token) {
+    console.log("No token found, redirecting to login");
     return NextResponse.redirect(new URL("/login", req.url)); 
   } 
   try { 
-    const payload = await verifyToken(token); 
+    const payload = await verifyToken(token);
+    console.log("Token verified successfully for user:", payload.id, "role:", payload.role); 
 
     if (payload.exp && Date.now() >= payload.exp * 1000) {
       const res = NextResponse.redirect(new URL("/login", req.url));
@@ -55,6 +57,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next(); 
   } catch (err) {
     console.error("Web middleware JWT error:", err);
+    console.error("Failed to verify token, redirecting to login");
     const res = NextResponse.redirect(new URL("/login", req.url));
     res.cookies.set("token", "", { expires: new Date(0) });
     return res;
