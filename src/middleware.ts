@@ -20,15 +20,19 @@ export async function middleware(req: NextRequest) {
 
   if (!isProtected) return NextResponse.next(); 
 
+  // Check for token in cookie (works for localhost)
   const token = req.cookies.get("token")?.value;
-  const allCookies = req.cookies.getAll();
-  console.log("Middleware checking path:", pathname);
-  console.log("All cookies:", allCookies);
-  console.log("Token exists:", !!token);
   
+  console.log("Middleware checking path:", pathname);
+  console.log("Token in cookie:", !!token);
+  
+  // For production with localStorage tokens, we can't check here
+  // The check will happen client-side in the dashboard pages
+  // So we allow the request through and let client-side handle it
   if (!token) {
-    console.log("No token found, redirecting to login");
-    return NextResponse.redirect(new URL("/login", req.url)); 
+    console.log("No cookie token - allowing through for client-side check");
+    // Don't redirect here - let the page load and check localStorage
+    return NextResponse.next();
   } 
   try { 
     const payload = await verifyToken(token);

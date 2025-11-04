@@ -13,6 +13,7 @@ type LoginResponse = {
   user: {
     role: "ADMIN" | "MANAGER" | "USER";
   };
+  token?: string;
 };
 
 const dashboardRoutes: Record<"ADMIN" | "MANAGER" | "USER", string> = {
@@ -33,11 +34,18 @@ export default function LoginPage() {
     },
     onSuccess: async (data) => {
       setMessage({ text: "Login successful! Redirecting...", type: "success" });
-      // Token is stored in httpOnly cookie by backend, no need to store in localStorage
+      
+      // Store user info
       localStorage.setItem("user", JSON.stringify(data.user));
+      
+      // Store token if provided (for cross-domain scenarios)
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        console.log("Token stored in localStorage for cross-domain auth");
+      }
 
-      // Wait a bit longer to ensure cookie is set, then do a hard redirect
-      await new Promise(resolve => setTimeout(resolve, 800));
+      // Wait a bit then redirect
+      await new Promise(resolve => setTimeout(resolve, 500));
       const role = data.user.role;
       console.log("Redirecting to:", dashboardRoutes[role]);
       window.location.href = dashboardRoutes[role];
