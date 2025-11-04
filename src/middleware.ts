@@ -15,8 +15,13 @@ async function verifyToken(token: string) {
 
 export async function middleware(req: NextRequest) { 
   const { pathname } = req.nextUrl; 
-  const protectedPaths = ["/dashboard", "/admin", "/manager"]; 
+  const protectedPaths = ["/dashboard"]; 
   const isProtected = protectedPaths.some((p) => pathname.startsWith(p)); 
+
+  // Allow access to login and signup pages
+  if (pathname === "/login" || pathname === "/signup") {
+    return NextResponse.next(); 
+  }
 
   if (!isProtected) return NextResponse.next(); 
 
@@ -57,5 +62,5 @@ export async function middleware(req: NextRequest) {
 } 
 
 export const config = {
-  matcher: ["/dashboard/:path*"],
+  matcher: ["/dashboard/:path*", "/login", "/signup"],
 };

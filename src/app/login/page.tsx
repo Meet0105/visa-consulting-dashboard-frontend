@@ -36,8 +36,11 @@ export default function LoginPage() {
       // Token is stored in httpOnly cookie by backend, no need to store in localStorage
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      const role = data.user.role;
-      router.push(dashboardRoutes[role]);
+      // Add a small delay to ensure the message is displayed before redirecting
+      setTimeout(() => {
+        const role = data.user.role;
+        router.push(dashboardRoutes[role]);
+      }, 1000);
     },
     onError: (error: any) => {
       setMessage({
