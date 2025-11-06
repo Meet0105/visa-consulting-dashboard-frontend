@@ -123,22 +123,29 @@ export default function LoginPage() {
       </form>
 
       {/* Demo Accounts */}
-      <div className="mt-8 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-        <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
-          Demo Accounts
-        </h3>
-        <div className="space-y-2 text-xs text-gray-600 dark:text-gray-400">
-          <div className="flex justify-between">
-            <span>Admin:</span>
-            <span className="font-mono">alice@admin.com / admin123</span>
+      <div className="mt-6 sm:mt-8 p-5 sm:p-6 glass-card border-2 border-indigo-100 dark:border-indigo-900/30">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg shadow-indigo-500/50">
+            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
           </div>
-          <div className="flex justify-between">
-            <span>Manager:</span>
-            <span className="font-mono">bob@manager.com / manager123</span>
+          <h3 className="text-base font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            Demo Accounts
+          </h3>
+        </div>
+        <div className="space-y-3 text-sm">
+          <div className="flex flex-col sm:flex-row sm:justify-between gap-2 p-3 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-xl border border-indigo-100 dark:border-indigo-800/30">
+            <span className="font-bold text-indigo-700 dark:text-indigo-300">Admin:</span>
+            <span className="font-mono text-gray-700 dark:text-gray-300">alice@admin.com / admin123</span>
           </div>
-          <div className="flex justify-between">
-            <span>User:</span>
-            <span className="font-mono">david@user.com / user123</span>
+          <div className="flex flex-col sm:flex-row sm:justify-between gap-2 p-3 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-xl border border-blue-100 dark:border-blue-800/30">
+            <span className="font-bold text-blue-700 dark:text-blue-300">Manager:</span>
+            <span className="font-mono text-gray-700 dark:text-gray-300">bob@manager.com / manager123</span>
+          </div>
+          <div className="flex flex-col sm:flex-row sm:justify-between gap-2 p-3 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl border border-green-100 dark:border-green-800/30">
+            <span className="font-bold text-green-700 dark:text-green-300">User:</span>
+            <span className="font-mono text-gray-700 dark:text-gray-300">david@user.com / user123</span>
           </div>
         </div>
       </div>

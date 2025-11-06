@@ -1,4 +1,6 @@
 "use client";
+import AuthGuard from "@/components/AuthGuard";
+import DashboardLayout from "@/components/DashboardLayout";
 import UserTable from "@/components/UserTable";
 import ApplicationStatusChart from "@/components/ApplicationStatusChart";
 import DashboardOverviewCards from "@/components/DashboardOverviewCards";
@@ -36,8 +38,10 @@ export default function ManagerDashboard() {
     : [];
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="container-wide py-8">
+    <AuthGuard requiredRole="MANAGER">
+      <DashboardLayout>
+        <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
+          <div className="container-wide py-4 sm:py-6 lg:py-8">
         {/* Header */}
         <DashboardHeader
           title="Manager Dashboard"
@@ -61,7 +65,7 @@ export default function ManagerDashboard() {
           />
 
         {/* Charts Section */}
-        <div className="grid lg:grid-cols-2 gap-8 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-6 sm:mb-8">
           {/* Application Status Chart */}
           <ApplicationStatusChart 
             title="Application Status Overview"
@@ -89,7 +93,7 @@ export default function ManagerDashboard() {
         }))} isLoading={isLoadingUsers} />
 
         {/* Quick Actions */}
-        <div className="mt-8 grid md:grid-cols-2 gap-6">
+        <div className="mt-6 sm:mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <div className="card">
             <div className="card-header">
               <h3 className="card-title">Recent Activity</h3>
@@ -144,7 +148,9 @@ export default function ManagerDashboard() {
             </div>
           </div>
         </div>
-      </div>
-    </main>
+        </div>
+      </main>
+      </DashboardLayout>
+    </AuthGuard>
   );
 }

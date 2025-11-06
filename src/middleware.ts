@@ -20,42 +20,50 @@ export async function middleware(req: NextRequest) {
 
   if (!isProtected) return NextResponse.next(); 
 
-  // Check for token in cookie (works for localhost)
+  // Check for token in cookie
   const token = req.cookies.get("token")?.value;
   
   console.log("Middleware checking path:", pathname);
   console.log("Token in cookie:", !!token);
   
-  // For production with localStorage tokens, we can't check here
-  // The check will happen client-side in the dashboard pages
-  // So we allow the request through and let client-side handle it
+  // If no token, redirect to login
   if (!token) {
-    console.log("No cookie token - allowing through for client-side check");
-    // Don't redirect here - let the page load and check localStorage
-    return NextResponse.next();
+    console.log("No token found - redirecting to login");
+    return NextResponse.redirect(new URL("/login", req.url));
   } 
+  
   try { 
     const payload = await verifyToken(token);
     console.log("Token verified successfully for user:", payload.id, "role:", payload.role); 
 
+    // Check token expiration
     if (payload.exp && Date.now() >= payload.exp * 1000) {
+      console.log("Token expired - redirecting to login");
       const res = NextResponse.redirect(new URL("/login", req.url));
       res.cookies.set("token", "", { expires: new Date(0) });
       return res;
     }
 
+    // Role-based access control
     if (pathname.startsWith("/dashboard/admin") && payload.role !== "ADMIN") {
-      const res = NextResponse.redirect(new URL("/login", req.url));
-      res.cookies.set("token", "", { expires: new Date(0) });
-      return res;
+      console.log("Access denied: User is not ADMIN");
+      // Redirect to their correct dashboard
+      const correctDashboard = payload.role === "MANAGER" ? "/dashboard/manager" : "/dashboard/user";
+      return NextResponse.redirect(new URL(correctDashboard, req.url));
     }
-    if (
-      pathname.startsWith("/dashboard/manager") &&
-      !["MANAGER", "ADMIN"].includes(payload.role)
-    ) {
-      const res = NextResponse.redirect(new URL("/login", req.url));
-      res.cookies.set("token", "", { expires: new Date(0) });
-      return res;
+    
+    if (pathname.startsWith("/dashboard/manager") && !["MANAGER", "ADMIN"].includes(payload.role)) {
+      console.log("Access denied: User is not MANAGER or ADMIN");
+      // Redirect to their correct dashboard
+      const correctDashboard = payload.role === "ADMIN" ? "/dashboard/admin" : "/dashboard/user";
+      return NextResponse.redirect(new URL(correctDashboard, req.url));
+    }
+    
+    if (pathname.startsWith("/dashboard/user") && payload.role !== "USER") {
+      console.log("Access denied: User is not USER");
+      // Redirect to their correct dashboard
+      const correctDashboard = payload.role === "ADMIN" ? "/dashboard/admin" : "/dashboard/manager";
+      return NextResponse.redirect(new URL(correctDashboard, req.url));
     }
 
     return NextResponse.next(); 

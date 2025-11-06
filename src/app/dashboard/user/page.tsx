@@ -1,4 +1,6 @@
 "use client";
+import AuthGuard from "@/components/AuthGuard";
+import DashboardLayout from "@/components/DashboardLayout";
 import ApplicationStatusChart from "@/components/ApplicationStatusChart";
 import { UserOverviewCards } from "@/components/UserOverviewCards";
 import DashboardHeader from "@/components/DashboardHeader";
@@ -22,8 +24,10 @@ export default function UserDashboard() {
   const pieData = transformToPieData(summary?.summary);
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="container-wide py-8">
+    <AuthGuard requiredRole="USER">
+      <DashboardLayout>
+        <main className="min-h-screen bg-gray-50 dark:bg-gray-900">
+          <div className="container-wide py-4 sm:py-6 lg:py-8">
         {/* Header */}
         <DashboardHeader
           title="User Dashboard"
@@ -50,7 +54,7 @@ export default function UserDashboard() {
            />
 
         {/* Charts and Applications */}
-        <div className="grid lg:grid-cols-2 gap-8 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-6 sm:mb-8">
           {/* Application Status Chart */}
           <ApplicationStatusChart
             pieData={pieData}
@@ -64,7 +68,9 @@ export default function UserDashboard() {
 
         {/* Quick Actions */}
         <UserQuickActions />
-      </div>
-    </main>
+          </div>
+        </main>
+      </DashboardLayout>
+    </AuthGuard>
   );
 }

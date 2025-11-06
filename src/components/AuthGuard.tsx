@@ -1,25 +1,66 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
-export default function AuthGuard({ children }: { children: React.ReactNode }) {
+interface AuthGuardProps {
+  children: React.ReactNode;
+  requiredRole?: "ADMIN" | "MANAGER" | "USER";
+}
+
+export default function AuthGuard({ children, requiredRole }: AuthGuardProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const [isChecking, setIsChecking] = useState(true);
+  const [isAuthorized, setIsAuthorized] = useState(false);
 
   useEffect(() => {
     // Check if user has token in localStorage
     const token = localStorage.getItem("token");
-    const user = localStorage.getItem("user");
+    const userStr = localStorage.getItem("user");
 
-    if (!token || !user) {
+    if (!token || !userStr) {
       console.log("No auth token found, redirecting to login");
       router.push("/login");
       return;
     }
 
-    console.log("Auth token found, user authenticated");
-    setIsChecking(false);
-  }, [router]);
+    try {
+      const user = JSON.parse(userStr);
+      console.log("Auth token found, user role:", user.role);
+
+      // Check role-based access
+      if (requiredRole) {
+        if (requiredRole === "ADMIN" && user.role !== "ADMIN") {
+          console.log("Access denied: User is not ADMIN");
+          const correctDashboard = user.role === "MANAGER" ? "/dashboard/manager" : "/dashboard/user";
+          router.push(correctDashboard);
+          return;
+        }
+
+        if (requiredRole === "MANAGER" && !["MANAGER", "ADMIN"].includes(user.role)) {
+          console.log("Access denied: User is not MANAGER or ADMIN");
+          const correctDashboard = user.role === "ADMIN" ? "/dashboard/admin" : "/dashboard/user";
+          router.push(correctDashboard);
+          return;
+        }
+
+        if (requiredRole === "USER" && user.role !== "USER") {
+          console.log("Access denied: User is not USER");
+          const correctDashboard = user.role === "ADMIN" ? "/dashboard/admin" : "/dashboard/manager";
+          router.push(correctDashboard);
+          return;
+        }
+      }
+
+      setIsAuthorized(true);
+      setIsChecking(false);
+    } catch (error) {
+      console.error("Error parsing user data:", error);
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      router.push("/login");
+    }
+  }, [router, requiredRole, pathname]);
 
   if (isChecking) {
     return (
@@ -30,6 +71,10 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
         </div>
       </div>
     );
+  }
+
+  if (!isAuthorized) {
+    return null;
   }
 
   return <>{children}</>;
