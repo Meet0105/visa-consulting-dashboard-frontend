@@ -42,10 +42,14 @@ export default function LoginPage() {
       if (data.token) {
         localStorage.setItem("token", data.token);
         console.log("Token stored in localStorage for cross-domain auth");
+        
+        // Also set cookie manually for cross-domain scenarios
+        document.cookie = `token=${data.token}; path=/; max-age=86400; SameSite=None; Secure`;
+        console.log("Token cookie set manually");
       }
 
-      // Wait a bit then redirect
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Wait a bit for cookie to be set, then redirect
+      await new Promise(resolve => setTimeout(resolve, 1000));
       const role = data.user.role;
       console.log("Redirecting to:", dashboardRoutes[role]);
       window.location.href = dashboardRoutes[role];
