@@ -6,22 +6,40 @@ import DashboardLayout from '@/components/DashboardLayout';
 import { getApiUrl } from '@/lib/config';
 
 type AnalyticsData = {
-  overview: {
+  summary?: {
+    total: number;
+    approved: number;
+    pending: number;
+    rejected: number;
+    successRate: string;
+  };
+  overview?: {
     users?: number;
     managers?: number;
-    appsTotal: number;
-    approved: number;
-    rejected: number;
-    pending: number;
+    appsTotal?: number;
+    approved?: number;
+    rejected?: number;
+    pending?: number;
     documentsPending?: number;
-    approvalRate: string;
-    rejectionRate: string;
+    approvalRate?: string;
+    rejectionRate?: string;
   };
-  recentActivity: {
+  recentActivity?: {
     period?: string;
-    newApplications: number;
+    newApplications?: number;
     myAssignedApplications?: number;
   };
+  applications?: Array<{
+    id: string;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
+    country: string;
+    assignedManager: {
+      name: string;
+      email: string;
+    } | null;
+  }>;
   countryBreakdown?: Array<{ country: string; count: number }>;
   monthlyTrend?: Array<{ month: string; total: number; approved: number; rejected: number; pending: number }>;
   counselorPerformance?: Array<{
@@ -193,23 +211,29 @@ export default function AnalyticsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white shadow-lg">
             <div className="text-blue-100 text-sm font-medium">Total Applications</div>
-            <div className="text-4xl font-bold mt-2">{analytics.overview.appsTotal}</div>
+            <div className="text-4xl font-bold mt-2">
+              {analytics.summary?.total || analytics.overview?.appsTotal || 0}
+            </div>
             <div className="text-blue-100 text-sm mt-2">
-              {analytics.recentActivity.newApplications} new in last {analytics.recentActivity.period || '30 days'}
+              {analytics.recentActivity?.newApplications || 0} new in last {analytics.recentActivity?.period || '30 days'}
             </div>
           </div>
 
           <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 text-white shadow-lg">
             <div className="text-green-100 text-sm font-medium">Approved</div>
-            <div className="text-4xl font-bold mt-2">{analytics.overview.approved}</div>
+            <div className="text-4xl font-bold mt-2">
+              {analytics.summary?.approved || analytics.overview?.approved || 0}
+            </div>
             <div className="text-green-100 text-sm mt-2">
-              Success Rate: {analytics.overview.approvalRate}
+              Success Rate: {analytics.summary?.successRate || analytics.overview?.approvalRate || '0%'}
             </div>
           </div>
 
           <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl p-6 text-white shadow-lg">
             <div className="text-yellow-100 text-sm font-medium">Pending</div>
-            <div className="text-4xl font-bold mt-2">{analytics.overview.pending}</div>
+            <div className="text-4xl font-bold mt-2">
+              {analytics.summary?.pending || analytics.overview?.pending || 0}
+            </div>
             <div className="text-yellow-100 text-sm mt-2">
               Awaiting review
             </div>
@@ -217,31 +241,33 @@ export default function AnalyticsPage() {
 
           <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-xl p-6 text-white shadow-lg">
             <div className="text-red-100 text-sm font-medium">Rejected</div>
-            <div className="text-4xl font-bold mt-2">{analytics.overview.rejected}</div>
+            <div className="text-4xl font-bold mt-2">
+              {analytics.summary?.rejected || analytics.overview?.rejected || 0}
+            </div>
             <div className="text-red-100 text-sm mt-2">
-              Rejection Rate: {analytics.overview.rejectionRate}
+              Rejection Rate: {analytics.overview?.rejectionRate || '0%'}
             </div>
           </div>
         </div>
 
         {/* Additional Metrics for Admin/Manager */}
-        {(userRole === 'ADMIN' || userRole === 'MANAGER') && analytics.overview.documentsPending !== undefined && (
+        {(userRole === 'ADMIN' || userRole === 'MANAGER') && analytics.overview?.documentsPending !== undefined && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {userRole === 'ADMIN' && (
               <>
                 <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200">
                   <div className="text-gray-600 text-sm font-medium">Total Students</div>
-                  <div className="text-3xl font-bold text-gray-900 mt-2">{analytics.overview.users}</div>
+                  <div className="text-3xl font-bold text-gray-900 mt-2">{analytics.overview?.users || 0}</div>
                 </div>
                 <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200">
                   <div className="text-gray-600 text-sm font-medium">Total Counselors</div>
-                  <div className="text-3xl font-bold text-gray-900 mt-2">{analytics.overview.managers}</div>
+                  <div className="text-3xl font-bold text-gray-900 mt-2">{analytics.overview?.managers || 0}</div>
                 </div>
               </>
             )}
             <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200">
               <div className="text-gray-600 text-sm font-medium">Documents Pending</div>
-              <div className="text-3xl font-bold text-gray-900 mt-2">{analytics.overview.documentsPending}</div>
+              <div className="text-3xl font-bold text-gray-900 mt-2">{analytics.overview?.documentsPending || 0}</div>
             </div>
           </div>
         )}
@@ -253,20 +279,23 @@ export default function AnalyticsPage() {
             <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Applications by Country</h3>
               <div className="space-y-3">
-                {analytics.countryBreakdown.slice(0, 5).map((item) => (
-                  <div key={item.country}>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="text-gray-700">{item.country}</span>
-                      <span className="font-semibold text-gray-900">{item.count}</span>
+                {analytics.countryBreakdown.slice(0, 5).map((item) => {
+                  const total = analytics.summary?.total || analytics.overview?.appsTotal || 1;
+                  return (
+                    <div key={item.country}>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="text-gray-700">{item.country}</span>
+                        <span className="font-semibold text-gray-900">{item.count}</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-blue-600 h-2 rounded-full"
+                          style={{ width: `${(item.count / total) * 100}%` }}
+                        />
+                      </div>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-blue-600 h-2 rounded-full"
-                        style={{ width: `${(item.count / analytics.overview.appsTotal) * 100}%` }}
-                      />
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
@@ -378,6 +407,53 @@ export default function AnalyticsPage() {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* My Applications (Student Only) */}
+        {userRole === 'USER' && analytics.applications && analytics.applications.length > 0 && (
+          <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
+            <div className="p-6 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">My Applications</h3>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Country</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Counselor</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Last Updated</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {analytics.applications.map((app) => (
+                    <tr key={app.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 text-sm font-medium text-gray-900">{app.country}</td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          app.status === 'APPROVED' ? 'bg-green-100 text-green-800' :
+                          app.status === 'REJECTED' ? 'bg-red-100 text-red-800' :
+                          'bg-yellow-100 text-yellow-800'
+                        }`}>
+                          {app.status.replace(/_/g, ' ')}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600">
+                        {app.assignedManager ? app.assignedManager.name : 'Not assigned'}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        {new Date(app.createdAt).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        {new Date(app.updatedAt).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         )}
