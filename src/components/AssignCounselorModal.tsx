@@ -37,7 +37,8 @@ export default function AssignCounselorModal({
       }
 
       const data = await response.json();
-      setCounselors(data);
+      // The API returns { users: [...], pagination: {...} }
+      setCounselors(data.users || data);
     } catch (err: any) {
       setError(err.message);
     }
