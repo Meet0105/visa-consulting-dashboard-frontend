@@ -10,12 +10,7 @@ import AuthFormSelect from "@/components/AuthFormSelect";
 import AuthFormButton from "@/components/AuthFormButton";
 import AuthFormMessage from "@/components/AuthFormMessage";
 
-type Workspace = { id: string; name: string };
 
-const fetchWorkspaces = async (): Promise<Workspace[]> => {
-  const response = await api.get("/workspaces");
-  return response.data;
-};
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
@@ -23,13 +18,12 @@ export default function SignupPage() {
     email: "",
     password: "",
     confirmPassword: "",
-    role: "USER" as "ADMIN" | "MANAGER" | "USER",
-    workspaceId: ""
+    role: "USER" as "ADMIN" | "MANAGER" | "USER"
   });
   const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
   const router = useRouter();
 
-  const { data: workspaces, isLoading: isLoadingWorkspaces, error: workspacesError } = useQuery<Workspace[]>({ queryKey: ['workspaces'], queryFn: fetchWorkspaces });
+
 
   const signupMutation = useMutation({
     mutationFn: async (userData: any) => {
@@ -68,8 +62,7 @@ export default function SignupPage() {
       name: formData.name,
       email: formData.email,
       password: formData.password,
-      role: formData.role,
-      workspaceId: formData.workspaceId || undefined
+      role: formData.role
     });
   };
 
@@ -158,26 +151,7 @@ export default function SignupPage() {
           <option value="ADMIN">Admin</option>
         </AuthFormSelect>
 
-        <AuthFormSelect
-          label="Workspace (Optional)"
-          id="workspaceId"
-          name="workspaceId"
-          value={formData.workspaceId}
-          onChange={handleInputChange}
-          disabled={isLoadingWorkspaces || signupMutation.isPending}
-          autoComplete="off"
-        >
-          <option value="">Select a workspace (optional)</option>
-          {workspaces?.map(workspace => (
-            <option key={workspace.id} value={workspace.id}>
-              {workspace.name}
-            </option>
-          ))}
-        </AuthFormSelect>
 
-        {workspacesError && (
-          <AuthFormMessage message={{ text: "Error loading workspaces.", type: "error" }} />
-        )}
 
         <AuthFormButton isLoading={signupMutation.isPending}>
           Sign Up
