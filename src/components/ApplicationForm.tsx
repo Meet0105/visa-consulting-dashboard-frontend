@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Application } from '@/types/types';
+import { getApiUrl } from '@/lib/config';
 
 type ApplicationFormProps = {
   onSuccess: (application: Application) => void;
@@ -50,7 +51,7 @@ export default function ApplicationForm({ onSuccess, onCancel }: ApplicationForm
     setError('');
 
     try {
-      const response = await fetch('http://localhost:4000/applications', {
+      const response = await fetch(`${getApiUrl()}/applications`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

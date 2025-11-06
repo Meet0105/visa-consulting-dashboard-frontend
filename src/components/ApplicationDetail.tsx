@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Application, ApplicationStatus } from '@/types/types';
+import { getApiUrl } from '@/lib/config';
 
 type ApplicationDetailProps = {
   application: Application;
@@ -55,7 +56,7 @@ export default function ApplicationDetail({ application, userRole, onUpdate }: A
     setError('');
 
     try {
-      const response = await fetch(`http://localhost:4000/applications/${application.id}/status`, {
+      const response = await fetch(`${getApiUrl()}/applications/${application.id}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -83,7 +84,7 @@ export default function ApplicationDetail({ application, userRole, onUpdate }: A
     setError('');
 
     try {
-      const response = await fetch(`http://localhost:4000/applications/${application.id}`, {
+      const response = await fetch(`${getApiUrl()}/applications/${application.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

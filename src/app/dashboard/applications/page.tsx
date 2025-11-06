@@ -6,6 +6,7 @@ import DashboardLayout from '@/components/DashboardLayout';
 import ApplicationsList from '@/components/ApplicationsList';
 import ApplicationForm from '@/components/ApplicationForm';
 import { Application } from '@/types/types';
+import { getApiUrl } from '@/lib/config';
 
 export default function ApplicationsPage() {
   const router = useRouter();
@@ -23,7 +24,7 @@ export default function ApplicationsPage() {
 
   const fetchUserRole = async () => {
     try {
-      const response = await fetch('http://localhost:4000/users/me', {
+      const response = await fetch(`${getApiUrl()}/users/me`, {
         credentials: 'include',
       });
 
@@ -41,7 +42,7 @@ export default function ApplicationsPage() {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:4000/applications', {
+      const response = await fetch(`${getApiUrl()}/applications`, {
         credentials: 'include',
       });
 

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Counselor } from '@/types/types';
+import { getApiUrl } from '@/lib/config';
 
 type AssignCounselorModalProps = {
   applicationId: string;
@@ -27,7 +28,7 @@ export default function AssignCounselorModal({
 
   const fetchCounselors = async () => {
     try {
-      const response = await fetch('http://localhost:4000/users?role=MANAGER', {
+      const response = await fetch(`${getApiUrl()}/users?role=MANAGER`, {
         credentials: 'include',
       });
 
@@ -52,7 +53,7 @@ export default function AssignCounselorModal({
     setError('');
 
     try {
-      const response = await fetch(`http://localhost:4000/applications/${applicationId}/assign`, {
+      const response = await fetch(`${getApiUrl()}/applications/${applicationId}/assign`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
