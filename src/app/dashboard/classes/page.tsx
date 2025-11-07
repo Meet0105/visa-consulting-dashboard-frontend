@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/DashboardLayout';
+import CreateClassModal from '@/components/CreateClassModal';
 import { getApiUrl } from '@/lib/config';
 
 type Class = {
@@ -349,24 +350,15 @@ export default function ClassesPage() {
         )}
       </div>
 
-      {/* Create Class Modal - Will be implemented in next component */}
+      {/* Create Class Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-t-2xl">
-              <h3 className="text-xl font-bold">Create New Class</h3>
-            </div>
-            <div className="p-6">
-              <p className="text-gray-600">Create class form will be here...</p>
-              <button
-                onClick={() => setShowCreateModal(false)}
-                className="mt-4 px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
+        <CreateClassModal
+          onClose={() => setShowCreateModal(false)}
+          onSuccess={() => {
+            fetchClasses();
+            alert('Class created successfully!');
+          }}
+        />
       )}
     </DashboardLayout>
   );
