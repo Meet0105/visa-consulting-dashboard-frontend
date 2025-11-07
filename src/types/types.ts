@@ -307,3 +307,46 @@ export type ApplicationStats = {
     count: number;
   }>;
 };
+
+
+export type NotificationType = "APPLICATION" | "DOCUMENT" | "APPOINTMENT" | "CLASS" | "SYSTEM";
+
+export type Notification = {
+  id: string;
+  recipientId: string;
+  recipient?: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  senderId?: string | null;
+  sender?: {
+    id: string;
+    name: string;
+  } | null;
+  message: string;
+  type: NotificationType;
+  link?: string | null;
+  isRead: boolean;
+  readAt?: string | null;
+  applicationId?: string | null;
+  documentId?: string | null;
+  appointmentId?: string | null;
+  classId?: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type NotificationPreference = {
+  id: string;
+  userId: string;
+  emailApplications: boolean;
+  emailDocuments: boolean;
+  emailAppointments: boolean;
+  emailClasses: boolean;
+  emailSystem: boolean;
+  appointmentReminders: boolean;
+  classReminders: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
